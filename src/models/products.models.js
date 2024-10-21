@@ -1,0 +1,38 @@
+import mongoose, { Schema } from "mongoose";
+
+
+const productSchema = new Schema ({
+    category: {
+        type : Schema.Types.ObjectId,
+        ref : "Category",
+        required : true
+      },
+      description: {
+        required: true,
+        type: String,
+      },
+      mainImage: {
+        required: true,
+        type : String //cloudinary url
+      },
+      name: {
+        required: true,
+        type: String,
+      },
+      price: {
+        default: 0,
+        type: Number,
+      },
+      stock: {
+        default: 0,
+        type: Number,
+      },
+      subImages: {
+        type : [String], //cloudinary url
+        default: [],
+      },
+
+},{timestamps:true})
+
+
+export const Product = mongoose.model("Product",productSchema)
