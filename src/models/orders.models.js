@@ -49,12 +49,12 @@ const orderSchema = new Schema({
     },
     status: {
         type: String,
-        enum: OrderStatusEnum,
+        enum: Object.values(OrderStatusEnum),
         default: OrderStatusEnum.PENDING,
     },
     paymentProvider: {
         type: String,
-        enum: PaymentProviderEnum,
+        enum: Object.values(PaymentProviderEnum),
         default: PaymentProviderEnum.UNKNOWN,
     },
     address: {
