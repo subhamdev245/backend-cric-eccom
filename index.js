@@ -7,7 +7,7 @@ import { DB_NAME } from './utils/constant.js';
 
 
 
-// Connect to the database and start the server
+
 DBCONNECTION(process.env.DATABASE_CONNECTION_STRING)
     .then(() => {
         app.on("error", (error) => {
