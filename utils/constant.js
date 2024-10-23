@@ -17,4 +17,14 @@ export const UserRolesEnum = {
     PAYPAL: "PAYPAL",
   };
   
+  export const ReviewStarEnum = {
+    ONE_STAR: 1,
+    TWO_STARS: 2,
+    THREE_STARS: 3,
+    FOUR_STARS: 4,
+    FIVE_STARS: 5,
+    NOT_RATED: 0,
+};
+
+export const DB_NAME = "CrickKart" 
   
