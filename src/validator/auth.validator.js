@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 
-const registerUserValidator = [
+const registerUserValidator = () => [
     body('name')
         .notEmpty().withMessage('Name is required.'),
     
@@ -14,7 +14,7 @@ const registerUserValidator = [
         .matches(/[0-9]/).withMessage('Password must contain at least one number.')
         .matches(/[!@#$%^&*(),.?":{}|<>]/).withMessage('Password must contain at least one special character.'),
 ];
-const loginUserValidator = [
+const loginUserValidator =() => [
     body('email')
         .isEmail().withMessage('Invalid email format.')
         .notEmpty().withMessage('Email is required.'),

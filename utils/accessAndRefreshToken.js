@@ -1,5 +1,5 @@
-import { EcomProfile } from "../src/models/profile.models";
-import sendResponse from "./sendResponse";
+import { EcomProfile } from "../src/models/profile.models.js";
+import sendResponse from "./sendResponse.js";
 
 const generateAccessAndRefreshToken = async(id) => {
    try {

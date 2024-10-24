@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
-import { UserRolesEnum } from "../../utils/constant";
-
+import { UserRolesEnum } from "../../utils/constant.js";
+import jwt from "jsonwebtoken"
+import bcrypt from "bcrypt"
 const profileSchema = new Schema({
     name: { 
         type: String,
@@ -22,7 +23,7 @@ const profileSchema = new Schema({
         minlength: [7, 'Must be at least 7 characters, got {VALUE}'] // Changed 'min' to 'minlength'
     },
     role: {
-        type: Number,
+        type: String,
         enum: Object.values(UserRolesEnum), 
         default: UserRolesEnum.USER,
     },
@@ -60,7 +61,7 @@ profileSchema.methods.generateRefreshToken =  function () {
   })
   return refershtoken
 }
-userSchema.methods.generateAccessToken =  function () {
+profileSchema.methods.generateAccessToken =  function () {
 
   const accesstoken =  jwt.sign({
     _id : this._id
