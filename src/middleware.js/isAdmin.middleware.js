@@ -1,6 +1,5 @@
-import asyncHandler from "../utils/asyncHandler";
-
-const isAdmin = asyncHandler((req,res,next)=>{
+import asyncHandler from "../../utils/asyncHandler.js"
+export const isAdmin = asyncHandler((req,res,next)=>{
     //get user
     const user = req.user
     //if isadmin true => next()
@@ -12,3 +11,4 @@ const isAdmin = asyncHandler((req,res,next)=>{
     })
     //else return NOTAUTHORISED
 })
+

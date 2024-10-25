@@ -3,6 +3,7 @@ import express, { json, urlencoded} from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import userRouter from "./src/router/auth.router.js"
+import cateoryRouter from "./src/router/categorie.route.js"
 
 export const app = express()
 
@@ -20,6 +21,7 @@ app.use(cookieParser())
 
 
 app.use("/api/v1/user",userRouter)
+app.use("/api/v1/category",cateoryRouter)
 
 
 export default app

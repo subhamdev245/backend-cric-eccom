@@ -99,7 +99,7 @@ const refreshAccessToken = asyncHandler(async(req,res)=>{
         "refreshToken",refreshToken,option
     ).sendResponse()
 })
-   const changePassword = asyncHandler(async(req, res) => {
+const changePassword = asyncHandler(async(req, res) => {
     const {oldPassword, newPassword} = req.body
     const user = await EcomProfile.findById(req.user?._id)
     const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
