@@ -23,7 +23,8 @@ const uploadOnCloudinary = async (localFilePath) => {
 
 const deleteFromCloudinaryByUrl = async (imgUrl) => {
     try {
-        const publicId = imgUrl.split('/').slice(-1)[0].split('.')[0];
+        // console.log('imgUrl:', imgUrl, 'Type:', typeof imgUrl);
+        const publicId = imgUrl[0].split('/').slice(-1)[0].split('.')[0];
         const result = await cloudinary.uploader.destroy(publicId);
         return result.result === 'ok' ? { success: true, message: 'File deleted successfully!' } : { success: false, message: 'File not found or could not be deleted.' };
     } catch (error) {

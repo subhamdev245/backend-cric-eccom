@@ -36,4 +36,42 @@ const createProductValidation = () => {
     ];
 };
 
-export default createProductValidation;
+const editProductValidation = () => {
+    return [
+        body('description')
+            .optional()
+            .isString().withMessage('Description must be a string.'),
+            
+        body('mainImage')
+            .optional()
+            .isString().withMessage('Main image must be a string.'),
+            
+        body('name')
+            .optional()
+            .isString().withMessage('Name must be a string.'),
+            
+        body('price')
+            .optional()
+            .isNumeric().withMessage('Price must be a number.'),
+            
+        body('stock')
+            .optional()
+            .isNumeric().withMessage('Stock must be a number.'),
+            
+        body('subImages')
+            .optional()
+            .isArray().withMessage('Sub-images must be an array.')
+            .custom((value) => {
+                value.forEach(img => {
+                    if (typeof img !== 'string') {
+                        throw new Error('Each sub-image must be a string.');
+                    }
+                });
+                return true;
+            }),
+    ];
+};
+
+export {
+    createProductValidation,editProductValidation
+}
