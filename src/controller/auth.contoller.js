@@ -1,6 +1,6 @@
-import generateAccessAndRefreshToken from "../../utils/accessAndRefreshToken.js";
-import asyncHandler from "../../utils/asyncHandler.js";
-import sendResponse from "../../utils/sendResponse.js";
+import generateAccessAndRefreshToken from "../utils/accessAndRefreshToken.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import sendResponse from "../utils/sendResponse.js";
 import { EcomProfile } from "../models/profile.models.js";
 
 

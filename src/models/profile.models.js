@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { UserRolesEnum } from "../../utils/constant.js";
+import { UserRolesEnum } from "../utils/constant.js";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 const profileSchema = new Schema({

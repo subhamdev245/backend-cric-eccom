@@ -1,4 +1,4 @@
-import asyncHandler from "../../utils/asyncHandler.js"
+import asyncHandler from "../utils/asyncHandler.js"
 export const isAdmin = asyncHandler((req,res,next)=>{
     //get user
     const user = req.user

@@ -1,7 +1,7 @@
 import axios from "axios"
-import sendResponse from "../../utils/sendResponse.js"
+import sendResponse from "../utils/sendResponse.js"
 import { EcomProfile } from "../models/profile.models.js"
-import asyncHandler from "../../utils/asyncHandler.js"
+import asyncHandler from "../utils/asyncHandler.js"
 import jwt from "jsonwebtoken";
 
 const verifyJwt = asyncHandler(async(req,res,next) => {

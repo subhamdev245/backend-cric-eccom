@@ -1,6 +1,6 @@
 import { Category } from "../models/category.models.js";
-import asyncHandler from "../../utils/asyncHandler.js";
-import sendResponse from "../../utils/sendResponse.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import sendResponse from "../utils/sendResponse.js";
 
 const createCategory = asyncHandler(async (req,res) => {
 

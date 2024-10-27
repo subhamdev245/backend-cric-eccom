@@ -11,10 +11,12 @@ const productSchema = new Schema ({
         required: true,
         type: String,
       },
-      mainImage: {
-        required: true,
-        type : String //cloudinary url
-      },
+      mainImage: [
+        {
+          required: true,
+          type : String //cloudinary url
+        },
+      ],
       name: {
         required: true,
         type: String,
@@ -24,7 +26,7 @@ const productSchema = new Schema ({
         type: Number,
       },
       stock: {
-        default: 0,
+        default: 1,
         type: Number,
       },
       subImages: {

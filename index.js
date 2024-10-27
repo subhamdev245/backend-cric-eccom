@@ -3,7 +3,7 @@ import 'dotenv/config'
 import mongoose from 'mongoose';
 import { DBCONNECTION } from './DB/index.js';
 import { app } from './app.js'; 
-import { DB_NAME } from './utils/constant.js';
+import { DB_NAME } from './src/utils/constant.js';
 
 
 

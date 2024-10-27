@@ -4,7 +4,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import userRouter from "./src/router/auth.router.js"
 import cateoryRouter from "./src/router/categorie.route.js"
-
+import productROuter from "./src/router/product.route.js"
 export const app = express()
 
 app.use(cors({
@@ -22,6 +22,6 @@ app.use(cookieParser())
 
 app.use("/api/v1/user",userRouter)
 app.use("/api/v1/category",cateoryRouter)
-
+app.use("/api/v1/product",productROuter)
 
 export default app
