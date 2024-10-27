@@ -1,7 +1,7 @@
 import { Router } from "express";
 import verifyJwt from "../middleware.js/auth.middleware.js";
 import { isAdmin } from "../middleware.js/isAdmin.middleware.js";
-import { createProduct, editProductDetails}  from "../controller/product.controller.js";
+import { createProduct, deleteProductDetails, editProductDetails}  from "../controller/product.controller.js";
 import { upload } from "../middleware.js/multer.middleware.js";
 import {createProductValidation,editProductValidation} from "../validator/product.validator.js";
 import { validate } from "../validator/index.js";
@@ -26,7 +26,7 @@ router.route("/upload-product").post(
     ),createProduct
 )
 router.route("/update-product/:productId").put(
-    editProductValidation(),validate,verifyJwt , isAdmin ,upload.fields(
+    createProductValidation(),validate,verifyJwt , isAdmin ,upload.fields(
         [
             {
                 name: "mainImage",
@@ -41,5 +41,7 @@ router.route("/update-product/:productId").put(
         ]
     ),editProductDetails
 )
-
+router.route("/delete-product/:ProductId").delete(
+    verifyJwt,isAdmin,deleteProductDetails
+)
 export  default router

@@ -13,7 +13,12 @@ const createProduct = asyncHandler(async (req, res) => {
     if (!isExistCategory) {
         return sendResponse(res, "Enter a valid Category", 401);
     }
-
+    const isExistProduct= await Product.findOne({
+        name : name
+    })
+    if (isExistProduct) {
+        return sendResponse(res, "Enter a new Product", 401);
+    }
 
     const mainImageLocalPath = req.files?.mainImage?.[0]?.path;
     const subImagesLocalPaths = req.files?.subImages.map(file => file.path);
@@ -137,10 +142,21 @@ const editProductDetails = asyncHandler(async (req, res) => {
 
     return sendResponse(res, "Product updated successfully", 200, updatedProduct);
 });
-
+const deleteProductDetails = asyncHandler(async (req,res) => {
+    const ProductId  = req.params?.ProductId
+    if (!ProductId) {
+        return sendResponse(res,"Enter valid Product",401)
+    }
+    const isExistProduct = await Product.findByIdAndDelete(ProductId)
+    if(!isExistProduct){
+        return sendResponse(res,"Enter valid Product",401)
+    }
+   return sendResponse(res,"Product Deleted",201)
+})
 export  {
     createProduct, 
-    editProductDetails
+    editProductDetails,
+    deleteProductDetails
 };
 
 

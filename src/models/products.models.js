@@ -18,6 +18,7 @@ const productSchema = new Schema ({
         },
       ],
       name: {
+        unique : true,
         required: true,
         type: String,
       },
