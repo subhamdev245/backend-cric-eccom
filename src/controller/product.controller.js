@@ -155,21 +155,21 @@ const deleteProductDetails = asyncHandler(async (req,res) => {
 })
 
 const getProductByCategory = asyncHandler(async (req,res) => {
-    const {category} = req.body
+    const category = req.params?.category
     
-    if (category === null || !(typeof category === "string") ){
-       return sendResponse(res,"Enter Valid Category",401)
+    if (!category) {
+        return sendResponse(res, "Category ID is required", 400);
     }
-    const formattedCategory = category.trim().toUpperCase();
-    const isExistCategory = await Category.findOne({
-        name : formattedCategory
-    })
+    
+    const isExistCategory = await Category.findById(
+        category
+    )
     if(!isExistCategory){
         return sendResponse(res,"Category does not exist",401)
     }
     const ProductData = await Product.find({
         category : isExistCategory._id
-    })
+    }).select(" -updatedAt -createdAt -__v")
     if (!ProductData || ProductData.length === 0) {
         return sendResponse(res, "No products found for this category", 404);
     }     

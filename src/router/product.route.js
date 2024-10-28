@@ -44,7 +44,7 @@ router.route("/update-product/:productId").put(
 router.route("/delete-product/:ProductId").delete(
     verifyJwt,isAdmin,deleteProductDetails
 )
-router.route("/get-product-cateory").get(
+router.route("/get-products/:category").get(
     verifyJwt,getProductByCategory
 )
 export  default router
