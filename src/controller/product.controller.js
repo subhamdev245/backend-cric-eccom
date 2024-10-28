@@ -153,10 +153,38 @@ const deleteProductDetails = asyncHandler(async (req,res) => {
     }
    return sendResponse(res,"Product Deleted",201)
 })
+
+const getProductByCategory = asyncHandler(async (req,res) => {
+    const {category} = req.body
+    
+    if (category === null || !(typeof category === "string") ){
+       return sendResponse(res,"Enter Valid Category",401)
+    }
+    const formattedCategory = category.trim().toUpperCase();
+    const isExistCategory = await Category.findOne({
+        name : formattedCategory
+    })
+    if(!isExistCategory){
+        return sendResponse(res,"Category does not exist",401)
+    }
+    const ProductData = await Product.find({
+        category : isExistCategory._id
+    })
+    if(!ProductData){
+        return sendResponse(res,"Server Error while getting product data",501)
+    }
+
+    return sendResponse(res,"Data Fetched Succcesfully",200,ProductData)
+
+})
+
+
+
 export  {
     createProduct, 
     editProductDetails,
-    deleteProductDetails
+    deleteProductDetails,
+    getProductByCategory
 };
 
 
