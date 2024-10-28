@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
+import { EcomProfile } from "./profile.models";
 
 const addressSchema = new Schema(
   {
@@ -24,7 +24,7 @@ const addressSchema = new Schema(
       type: String,
     },
     owner: {
-      ref: "User",
+      ref: "EcomProfile",
       type: Schema.Types.ObjectId,
     },
     pincode: {

@@ -170,9 +170,9 @@ const getProductByCategory = asyncHandler(async (req,res) => {
     const ProductData = await Product.find({
         category : isExistCategory._id
     })
-    if(!ProductData){
-        return sendResponse(res,"Server Error while getting product data",501)
-    }
+    if (!ProductData || ProductData.length === 0) {
+        return sendResponse(res, "No products found for this category", 404);
+    }     
 
     return sendResponse(res,"Data Fetched Succcesfully",200,ProductData)
 
