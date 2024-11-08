@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Mongoose, Schema } from "mongoose";
 
 const categorySchema = new Schema({
     name : {
@@ -7,7 +7,11 @@ const categorySchema = new Schema({
         maxlength: 32,
         unique: true,
         trim :true
-    }
+    },
+    relatedProducts: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product', 
+      }],
 },{timestamps:true})
 
 
