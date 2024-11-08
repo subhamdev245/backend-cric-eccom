@@ -1,7 +1,14 @@
-import { body } from 'express-validator';
+import { body, } from 'express-validator';
 
 const createProductValidation = () => {
     return [
+        body('category')
+        .custom(value => {
+      if (Array.isArray(value)) {
+        return value.every(item => isMongoId(item)); 
+      }
+      return isMongoId(value); 
+    }),
         body('description')
             .notEmpty().withMessage('Description is required.')
             .isString().withMessage('Description must be a string.'),
@@ -38,6 +45,14 @@ const createProductValidation = () => {
 
 const editProductValidation = () => {
     return [
+       body('category')
+          .custom(value => {
+        if (Array.isArray(value)) {
+          return value.every(item => isMongoId(item)); 
+        }
+        return isMongoId(value); 
+      })
+      .withMessage('Category must be a valid MongoDB ObjectId or an array of MongoDB ObjectIds'),
         body('description')
             .optional()
             .isString().withMessage('Description must be a string.'),
