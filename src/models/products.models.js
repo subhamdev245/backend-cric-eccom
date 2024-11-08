@@ -2,11 +2,13 @@ import mongoose, { Schema } from "mongoose";
 
 
 const productSchema = new Schema ({
-    category: {
+    category: [
+      {
         type : Schema.Types.ObjectId,
         ref : "Category",
         required : true
-      },
+      }
+    ],
       description: {
         required: true,
         type: String,
@@ -34,7 +36,13 @@ const productSchema = new Schema ({
         type : [String], //cloudinary url
         default: [],
       },
-
+      featuredPlayers : [
+        {
+          type : Schema.Types.ObjectId,
+          ref : "FeaturedPlayer",
+          required : true
+        }
+      ]
 },{timestamps:true})
 
 
