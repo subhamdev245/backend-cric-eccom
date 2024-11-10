@@ -178,6 +178,9 @@ const getProductByCategory = asyncHandler(async (req,res) => {
 
 })
 
+const getSingleProduct = asyncHandler(async (req,res) => {
+    
+})
 
 
 export  {

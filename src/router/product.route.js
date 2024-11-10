@@ -25,7 +25,7 @@ router.route("/upload-product").post(
         ]
     ),createProduct
 )
-router.route("/update-product/:productId").put(
+router.route("/edit-product/:productId").put(
     createProductValidation(),validate,verifyJwt , isAdmin ,upload.fields(
         [
             {

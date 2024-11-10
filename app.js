@@ -8,7 +8,8 @@ import productROuter from "./src/router/product.route.js"
 export const app = express()
 
 app.use(cors({
-    origin : '*'
+    origin : 'http://localhost:5173/',
+    credentials : true ,
 }))
 app.use(json({limit:"16kb"}))
 app.use(urlencoded({

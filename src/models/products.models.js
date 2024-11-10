@@ -40,7 +40,7 @@ const productSchema = new Schema ({
         {
           type : Schema.Types.ObjectId,
           ref : "FeaturedPlayer",
-          required : true
+          required : false
         }
       ]
 },{timestamps:true})

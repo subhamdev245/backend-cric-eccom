@@ -32,7 +32,7 @@ const logInUser = asyncHandler(async (req,res) => {
     //find user by email check password 
     const existedUser = await EcomProfile.findOne({email})
     if(!existedUser){
-        return sendResponse(res,"Sign In Before Login",401)
+        return sendResponse(res,"Sign up Before Login",401)
     }
     const isMatch = await existedUser.isPasswordCorrect(password)
     if (!isMatch) {
