@@ -28,33 +28,28 @@ const createCategory = asyncHandler(async (req,res) => {
     return sendResponse(res,"Category Created",201)
 })
 
-const removeCategory = asyncHandler(async (req,res) => {
+const removeCategory = asyncHandler(async (req, res) => {
+    const { categoryId } = req.body;
 
-    const{category} = req.body
-    const formattedCategory = category.trim().toUpperCase();
-
-
-    if(formattedCategory === ""){
-        return sendResponse(res," send valid category",401)
+    if (!categoryId || !mongoose.Types.ObjectId.isValid(categoryId)) {
+        return sendResponse(res, "Please provide a valid category ID", 400);
     }
 
-    const isExistCategory = await Category.findOne({
-        name : formattedCategory
-    })
-    
-    
-    if(!isExistCategory){
-        return sendResponse(res,"Before deleting create category",401)
+    const isExistCategory = await Category.findById(categoryId);
+
+    if (!isExistCategory) {
+        return sendResponse(res, "Category not found", 404);
     }
-    const response = await Category.findOneAndDelete({
-        name : formattedCategory
-    })
+
+    const response = await Category.findByIdAndDelete(categoryId);
+
     if (response) {
-        return sendResponse(res,"Category Removed",201)
+        return sendResponse(res, "Category removed successfully", 200);
     }
-    return sendResponse(res,"Error While Deleting",501)
-    
-})
+
+    return sendResponse(res, "Error while deleting category", 500);
+});
+
 const getAllCategories = asyncHandler(async (req, res) => {
     try {
       
