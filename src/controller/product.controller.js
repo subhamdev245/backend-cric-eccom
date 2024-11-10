@@ -167,27 +167,56 @@ const getProductByCategory = asyncHandler(async (req,res) => {
     if(!isExistCategory){
         return sendResponse(res,"Category does not exist",401)
     }
-    const ProductData = await Product.find({
-        category : isExistCategory._id
-    }).select(" -updatedAt -createdAt -__v")
-    if (!ProductData || ProductData.length === 0) {
-        return sendResponse(res, "No products found for this category", 404);
-    }     
+    const products = await Product.find({ category: category })
+    .populate('featuredPlayers');    
+    if(products.length === 0) {
+        return sendResponse(res, 'No products found in this category', 404);
+      }
+      const ProductData = products.map((product) => ({
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        stock: product.stock,
+        category: product.category,
+        mainImage: product.mainImage,
+        subImages: product.subImages,
+        // Handle featured players
+        featuredPlayers: product.featuredPlayers.length > 0 
+          ? product.featuredPlayers.map(player => player.name) 
+          : [],  
+      })); 
+    return sendResponse(res,"Product Fetched succesully",201,ProductData)
+} 
+)
 
-    return sendResponse(res,"Data Fetched Succcesfully",200,ProductData)
-
-})
-
-const getSingleProduct = asyncHandler(async (req,res) => {
-    
-})
+const getSingleProduct = asyncHandler(async (req, res) => {
+    const { productId } = req?.params;
+    const product = await Product.findById(productId)
+      .populate('featuredPlayers'); 
+    if (!product) {
+        return sendResponse(res, 'Product not found', 404);
+    }  
+    const response = {
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        stock: product.stock,
+        category: product.category,
+        mainImage: product.mainImage,
+        subImages: product.subImages,
+        featuredPlayers: product.featuredPlayers.length > 0 ? 
+        product.featuredPlayers.map(player => player.name) : [], 
+    };
+    return sendResponse(res, 'Product fetched successfully', 200, response);
+});
 
 
 export  {
     createProduct, 
     editProductDetails,
     deleteProductDetails,
-    getProductByCategory
+    getProductByCategory,
+    getSingleProduct
 };
 
 
