@@ -6,6 +6,6 @@ import { isAdmin } from "../middleware/isAdmin.middleware.js";
 const router = Router()
 
 router.route("/add").post(verifyJwt,isAdmin,createCategory)
-router.route("/remove").post(verifyJwt,isAdmin,removeCategory)
+router.route("/remove/:categoryId").post(verifyJwt,isAdmin,removeCategory)
 router.route("/get-category").get(getAllCategories)
 export default router

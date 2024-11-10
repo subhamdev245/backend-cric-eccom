@@ -6,34 +6,63 @@ import { Product } from '../models/products.models.js';
 import { Category } from '../models/category.models.js';
 
 const createProduct = asyncHandler(async (req, res) => {
-    const { category, description, name, price, stock } = req.body;
+    const { categoryIds, description, name, price, stock, featuredPlayers } = req.body;
 
     
-    const isExistCategory = await Category.findById(category);
-    if (!isExistCategory) {
-        return sendResponse(res, "Enter a valid Category", 401);
+    if (!categoryIds || !Array.isArray(categoryIds) || categoryIds.length === 0) {
+        return sendResponse(res, "Please provide an array of category IDs", 400);
     }
-    const isExistProduct= await Product.findOne({
-        name : name
-    })
+
+    const invalidCategoryIds = categoryIds.filter(categoryId => 
+        !mongoose.Types.ObjectId.isValid(categoryId)
+    );
+
+    if (invalidCategoryIds.length > 0) {
+        return sendResponse(res, `Invalid category ID(s): ${invalidCategoryIds.join(', ')}`, 400);
+    }
+
+    
+    const categories = await Category.find({ '_id': { $in: categoryIds } });
+
+    if (categories.length !== categoryIds.length) {
+        return sendResponse(res, "One or more categories not found", 404);
+    }
+
+   
+    const isExistProduct = await Product.findOne({ name });
     if (isExistProduct) {
-        return sendResponse(res, "Enter a new Product", 401);
+        return sendResponse(res, "Product already exists, enter a new product", 401);
     }
 
-    const mainImageLocalPath = req.files?.mainImage?.[0]?.path;
-    const subImagesLocalPaths = req.files?.subImages.map(file => file.path);
+    
+    let validFeaturedPlayers = [];
+    if (featuredPlayers && featuredPlayers.length > 0) {
+        validFeaturedPlayers = await Promise.all(
+            featuredPlayers.map(async (playerId) => {
+                if (!mongoose.Types.ObjectId.isValid(playerId)) {
+                    throw new Error(`Invalid player ID: ${playerId}`);
+                }
+                const player = await FeaturedPlayer.findById(playerId);
+                if (!player) {
+                    throw new Error(`Player not found: ${playerId}`);
+                }
+                return player._id;
+            })
+        );
+    }
 
     
+    const mainImageLocalPath = req.files?.mainImage?.[0]?.path;
+    const subImagesLocalPaths = req.files?.subImages?.map(file => file.path);
+
     if (!mainImageLocalPath || subImagesLocalPaths.length === 0) {
         return sendResponse(res, "Main image and at least one sub-image are required", 400);
     }
 
     
     const mainImageUrl = await uploadOnCloudinary(mainImageLocalPath);
-    
-    
     const subImagesUrls = await Promise.all(
-        subImagesLocalPaths.map(async (imagePath) => await uploadOnCloudinary(imagePath))
+        subImagesLocalPaths.map(imagePath => uploadOnCloudinary(imagePath))
     );
 
     
@@ -41,73 +70,63 @@ const createProduct = asyncHandler(async (req, res) => {
         return sendResponse(res, "Error uploading images", 500);
     }
 
-    
+    // Create the new product
     const newProduct = await Product.create({
-        category: isExistCategory._id,
+        category: categoryIds,  
         description,
         name,
         price,
         stock,
         mainImage: mainImageUrl,
         subImages: subImagesUrls,
+        featuredPlayers: validFeaturedPlayers,  
     });
 
-    
     if (!newProduct) {
         return sendResponse(res, "Error while creating Product", 501);
     }
 
-    
-    return sendResponse(res, "Product Created", 201, newProduct);
+    return sendResponse(res, "Product Created Successfully", 201, newProduct);
 });
 
 const editProductDetails = asyncHandler(async (req, res) => {
-    const validAttributes = ['name', 'price', 'description', 'category', 'mainImage', 'subImages','stock'];
-    const productId = req.params.productId;
-    
-    
-    // Check if the product exists
-    const validProduct = await Product.findById(productId);
-    if (!validProduct) {
-        return sendResponse(res, "Give a valid Product", 401);
+    const validAttributes = ['name', 'price', 'description', 'category', 'mainImage', 'subImages', 'stock'];
+    const { productId } = req.params;
+    const attributes = req.body;
+
+    const product = await Product.findById(productId);
+    if (!product) {
+        return sendResponse(res, "Product not found", 404);
     }
 
-    const attributes = req.body;
-    
-    
-    // Validate incoming attributes
-    for (const key of Object.keys(attributes)) {
-        if (!validAttributes.includes(key)) {
-            return sendResponse(res, "Give a valid Attribute", 401);
-        }
+    const invalidAttributes = Object.keys(attributes).filter(key => !validAttributes.includes(key));
+    if (invalidAttributes.length > 0) {
+        return sendResponse(res, `Invalid attribute(s): ${invalidAttributes.join(', ')}`, 400);
     }
 
     if (req.files?.mainImage) {
-        
-        console.log("mainImage");
-        
-        const mainImageLocalPath = req.files?.mainImage?.[0]?.path;
+        const mainImageLocalPath = req.files.mainImage[0]?.path;
         if (!mainImageLocalPath) {
-            return sendResponse(res, "Send a valid image", 401);
+            return sendResponse(res, "Main image is required", 400);
         }
+
         const mainImageUrl = await uploadOnCloudinary(mainImageLocalPath);
         if (!mainImageUrl) {
-            return sendResponse(res, "Error uploading images", 500);
+            return sendResponse(res, "Error uploading main image", 500);
         }
-       const responsedelete =  await deleteFromCloudinaryByUrl(validProduct.mainImage);
-       if (!responsedelete) {
-        return sendResponse(res, "Error uploading images", 500);
-       } 
-       await Product.findByIdAndUpdate(productId, { $unset: { mainImage: "" } }, { new: true });
-        attributes.mainImage = mainImageUrl; 
+
+        const deleteOldImage = await deleteFromCloudinaryByUrl(product.mainImage);
+        if (!deleteOldImage) {
+            return sendResponse(res, "Error deleting old main image", 500);
+        }
+
+        attributes.mainImage = mainImageUrl;
     }
 
-    
     if (req.files?.subImages) {
-        const subImagesLocalPaths = req.files?.subImages.map(file => file.path) || [];
-
+        const subImagesLocalPaths = req.files.subImages.map(file => file.path) || [];
         if (subImagesLocalPaths.length === 0) {
-            return sendResponse(res, "Send valid images", 401);
+            return sendResponse(res, "At least one sub-image is required", 400);
         }
 
         const subImagesUrls = await Promise.all(
@@ -115,21 +134,16 @@ const editProductDetails = asyncHandler(async (req, res) => {
         );
 
         if (subImagesUrls.includes(null)) {
-            return sendResponse(res, "Error uploading images", 500);
+            return sendResponse(res, "Error uploading sub-images", 500);
         }
 
         await Promise.all(
-            validProduct.subImages.map(async (imagePath) => await deleteFromCloudinaryByUrl(imagePath))
+            product.subImages.map(async (imagePath) => await deleteFromCloudinaryByUrl(imagePath))
         );
 
-        await Product.findByIdAndUpdate(productId, {
-            $unset: { subImages: "" }
-        }, { new: true });
-
-        attributes.subImages = subImagesUrls; 
+        attributes.subImages = subImagesUrls;
     }
 
-    // Update product with valid attributes
     const updatedProduct = await Product.findByIdAndUpdate(
         productId,
         attributes,
@@ -137,11 +151,12 @@ const editProductDetails = asyncHandler(async (req, res) => {
     );
 
     if (!updatedProduct) {
-        return sendResponse(res, "Error while updating Product", 501);
+        return sendResponse(res, "Error while updating product", 500);
     }
 
     return sendResponse(res, "Product updated successfully", 200, updatedProduct);
 });
+
 const deleteProductDetails = asyncHandler(async (req,res) => {
     const ProductId  = req.params?.ProductId
     if (!ProductId) {
@@ -209,6 +224,7 @@ const getSingleProduct = asyncHandler(async (req, res) => {
     };
     return sendResponse(res, 'Product fetched successfully', 200, response);
 });
+
 
 
 export  {
