@@ -3,7 +3,7 @@ import { Router } from "express";
 import { logInUser , logout, registerUser} from "../controller/auth.contoller.js";
 import { loginUserValidator , registerUserValidator } from "../validator/auth.validator.js";
 import { validate } from "../validator/index.js";
-import verifyJwt from "../middleware.js/auth.middleware.js";
+import verifyJwt from "../middleware/auth.middleware.js"
 
 
 const router = Router()

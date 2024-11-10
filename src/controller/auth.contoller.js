@@ -5,6 +5,8 @@ import { EcomProfile } from "../models/profile.models.js";
 
 
 const registerUser = asyncHandler(async(req,res)=>{
+    
+    
     const {name,email,password} = req.body 
     //check for existed user 
    const isExisted = await  EcomProfile.findOne({
@@ -42,7 +44,8 @@ const logInUser = asyncHandler(async (req,res) => {
     const loggedInUser = await EcomProfile.findById(existedUser._id).select("-password -refreshToken");
     const options = {
         httpOnly: true,
-        secure : true
+        secure : true,
+        sameSite: 'None', 
     };
     return res.status(200) 
         .cookie("accessToken", accessToken, options)

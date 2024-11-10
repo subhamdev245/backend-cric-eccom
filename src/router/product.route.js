@@ -1,8 +1,8 @@
 import { Router } from "express";
-import verifyJwt from "../middleware.js/auth.middleware.js";
-import { isAdmin } from "../middleware.js/isAdmin.middleware.js";
+import verifyJwt from "../middleware/auth.middleware.js";
+import { isAdmin } from "../middleware/isAdmin.middleware.js";
 import { createProduct, deleteProductDetails, editProductDetails, getProductByCategory}  from "../controller/product.controller.js";
-import { upload } from "../middleware.js/multer.middleware.js";
+import { upload } from "../middleware/multer.middleware.js";
 import {createProductValidation,editProductValidation} from "../validator/product.validator.js";
 import { validate } from "../validator/index.js";
 
