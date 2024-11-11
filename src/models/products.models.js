@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { FeaturedPlayer } from "./featureplayer.models.js";
 
 
 const productSchema = new Schema ({

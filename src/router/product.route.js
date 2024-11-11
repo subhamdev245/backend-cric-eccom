@@ -3,7 +3,7 @@ import verifyJwt from "../middleware/auth.middleware.js";
 import { isAdmin } from "../middleware/isAdmin.middleware.js";
 import { createProduct, deleteProductDetails, editProductDetails, getProductByCategory, getSingleProduct}  from "../controller/product.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
-import { createProductValidationMiddleware } from "../middleware/product.middleware.js";
+import { createProductValidationMiddleware, editProductValidationMiddleware } from "../middleware/product.middleware.js";
 
 
 
@@ -25,7 +25,7 @@ router.route("/upload-product").post(
         ]
     ),createProductValidationMiddleware,createProduct
 )
-router.route("/edit-product/:productId").put(
+router.route("/edit-product/:id").put(
     verifyJwt , isAdmin ,upload.fields(
         [
             {
@@ -39,7 +39,7 @@ router.route("/edit-product/:productId").put(
     
 
         ]
-    ),editProductDetails
+    ), editProductValidationMiddleware,editProductDetails
 )
 router.route("/delete-product/:ProductId").delete(
     verifyJwt,isAdmin,deleteProductDetails

@@ -100,7 +100,9 @@ const createProduct = asyncHandler(async (req, res) => {
 
 const editProductDetails = asyncHandler(async (req, res) => {
     const validAttributes = ['name', 'price', 'description', 'category', 'mainImage', 'subImages', 'stock'];
-    const { productId } = req.params;
+    const productId = req.params?.id;
+    console.log(productId);
+    
     const attributes = req.body;
 
     const product = await Product.findById(productId);

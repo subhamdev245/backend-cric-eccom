@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { Product } from "./products.models";
+import { Product } from "./products.models.js";
 
 
 const featuredPlayerSchema = new Schema({
