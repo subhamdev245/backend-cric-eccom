@@ -3,14 +3,14 @@ import verifyJwt from "../middleware/auth.middleware.js";
 import { isAdmin } from "../middleware/isAdmin.middleware.js";
 import { createProduct, deleteProductDetails, editProductDetails, getProductByCategory, getSingleProduct}  from "../controller/product.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
-import {createProductValidation,editProductValidation} from "../validator/product.validator.js";
-import { validate } from "../validator/index.js";
+import { createProductValidationMiddleware } from "../middleware/product.middleware.js";
+
 
 
 const router = Router()
 
 router.route("/upload-product").post(
-    editProductValidation(),validate,verifyJwt , isAdmin ,upload.fields(
+     verifyJwt , isAdmin ,upload.fields(
         [
             {
                 name: "mainImage",
@@ -23,10 +23,10 @@ router.route("/upload-product").post(
     
 
         ]
-    ),createProduct
+    ),createProductValidationMiddleware,createProduct
 )
 router.route("/edit-product/:productId").put(
-    createProductValidation(),validate,verifyJwt , isAdmin ,upload.fields(
+    verifyJwt , isAdmin ,upload.fields(
         [
             {
                 name: "mainImage",

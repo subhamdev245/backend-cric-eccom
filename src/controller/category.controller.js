@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Category } from "../models/category.models.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import sendResponse from "../utils/sendResponse.js";
@@ -29,8 +30,9 @@ const createCategory = asyncHandler(async (req,res) => {
 })
 
 const removeCategory = asyncHandler(async (req, res) => {
-    const { categoryId } = req.body;
-
+    const {categoryId}  = req?.params;
+    
+    
     if (!categoryId || !mongoose.Types.ObjectId.isValid(categoryId)) {
         return sendResponse(res, "Please provide a valid category ID", 400);
     }

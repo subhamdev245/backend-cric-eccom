@@ -3,7 +3,7 @@ import express, { json, urlencoded} from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import userRouter from "./src/router/auth.router.js"
-import cateoryRouter from "./src/router/categorie.route.js"
+import cateoryRouter from "./src/router/category.route.js"
 import productROuter from "./src/router/product.route.js"
 export const app = express()
 

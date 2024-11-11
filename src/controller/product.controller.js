@@ -4,29 +4,38 @@ import sendResponse from '../utils/sendResponse.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { Product } from '../models/products.models.js';
 import { Category } from '../models/category.models.js';
+import mongoose from 'mongoose';
 
 const createProduct = asyncHandler(async (req, res) => {
     const { categoryIds, description, name, price, stock, featuredPlayers } = req.body;
-
     
-    if (!categoryIds || !Array.isArray(categoryIds) || categoryIds.length === 0) {
-        return sendResponse(res, "Please provide an array of category IDs", 400);
-    }
-
-    const invalidCategoryIds = categoryIds.filter(categoryId => 
-        !mongoose.Types.ObjectId.isValid(categoryId)
-    );
-
-    if (invalidCategoryIds.length > 0) {
-        return sendResponse(res, `Invalid category ID(s): ${invalidCategoryIds.join(', ')}`, 400);
-    }
-
     
-    const categories = await Category.find({ '_id': { $in: categoryIds } });
-
-    if (categories.length !== categoryIds.length) {
-        return sendResponse(res, "One or more categories not found", 404);
+    if (!categoryIds || (typeof categoryIds === 'string' && categoryIds.trim().length === 0) || (Array.isArray(categoryIds) && categoryIds.length === 0)) {
+        return sendResponse(res, "Please provide valid category IDs", 400);
     }
+
+    if (Array.isArray (categoryIds)) {
+        const invalidCategoryIds = categoryIds.filter(categoryId => 
+            !mongoose.Types.ObjectId.isValid(categoryId)
+        );
+    
+        if (invalidCategoryIds.length > 0) {
+            return sendResponse(res, `Invalid category ID(s): ${invalidCategoryIds.join(', ')}`, 400);
+        }
+        
+        const categories = await Category.find({ '_id': { $in: categoryIds } });
+
+        if (categories.length !== categoryIds.length) {
+            return sendResponse(res, "One or more categories not found", 404);
+        }
+
+    }
+
+    const isExistCategory = Category.findById(categoryIds)
+    if (!isExistCategory) {
+        return sendResponse(res, "categorie not found", 404);
+    }
+  
 
    
     const isExistProduct = await Product.findOne({ name });
@@ -42,7 +51,7 @@ const createProduct = asyncHandler(async (req, res) => {
                 if (!mongoose.Types.ObjectId.isValid(playerId)) {
                     throw new Error(`Invalid player ID: ${playerId}`);
                 }
-                const player = await FeaturedPlayer.findById(playerId);
+                const player = await featuredPlayers.findById(playerId);
                 if (!player) {
                     throw new Error(`Player not found: ${playerId}`);
                 }
