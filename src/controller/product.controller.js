@@ -95,6 +95,8 @@ const createProduct = asyncHandler(async (req, res) => {
         return sendResponse(res, "Error while creating Product", 501);
     }
 
+    
+
     return sendResponse(res, "Product Created Successfully", 201, newProduct);
 });
 

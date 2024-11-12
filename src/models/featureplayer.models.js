@@ -11,7 +11,8 @@ const featuredPlayerSchema = new Schema({
   },
   featuredProducts: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product', 
+    ref: 'Product',
+    required : true 
   }],
   featuredImage: {
     type: String,
