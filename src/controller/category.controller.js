@@ -53,20 +53,16 @@ const removeCategory = asyncHandler(async (req, res) => {
 });
 
 const getAllCategories = asyncHandler(async (req, res) => {
-    try {
-      
+    
+    
       const categories = await Category.find();
   
       if (!categories || categories.length === 0) {
         return sendResponse(res, "No categories found", 404);
       }
   
-      
       return sendResponse(res, "Categories fetched successfully", 200, categories);
-    } catch (error) {
-      console.error(error);
-      return sendResponse(res, "Error while fetching categories", 500);
-    }
+    
   });
   
 

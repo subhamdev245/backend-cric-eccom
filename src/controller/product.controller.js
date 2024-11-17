@@ -5,10 +5,11 @@ import asyncHandler from '../utils/asyncHandler.js';
 import { Product } from '../models/products.models.js';
 import { Category } from '../models/category.models.js';
 import mongoose from 'mongoose';
+import { FeaturedPlayer } from '../models/featureplayer.models.js';
 
 const createProduct = asyncHandler(async (req, res) => {
-    const { categoryIds, description, name, price, stock, featuredPlayers } = req.body;
-    
+    const {  description, name, price, stock } = req.body;
+    let {categoryIds,featuredPlayersIds} = req.body
     
     if (!categoryIds || (typeof categoryIds === 'string' && categoryIds.trim().length === 0) || (Array.isArray(categoryIds) && categoryIds.length === 0)) {
         return sendResponse(res, "Please provide valid category IDs", 400);
@@ -35,7 +36,7 @@ const createProduct = asyncHandler(async (req, res) => {
     if (!isExistCategory) {
         return sendResponse(res, "categorie not found", 404);
     }
-  
+    categoryIds = [categoryIds]
 
    
     const isExistProduct = await Product.findOne({ name });
@@ -44,21 +45,32 @@ const createProduct = asyncHandler(async (req, res) => {
     }
 
     
-    let validFeaturedPlayers = [];
-    if (featuredPlayers && featuredPlayers.length > 0) {
-        validFeaturedPlayers = await Promise.all(
-            featuredPlayers.map(async (playerId) => {
-                if (!mongoose.Types.ObjectId.isValid(playerId)) {
-                    throw new Error(`Invalid player ID: ${playerId}`);
-                }
-                const player = await featuredPlayers.findById(playerId);
-                if (!player) {
-                    throw new Error(`Player not found: ${playerId}`);
-                }
-                return player._id;
-            })
-        );
+    let validFeaturedPlayersIds = [];
+    if (featuredPlayersIds) {
+    if (typeof featuredPlayersIds === 'string') {
+        validFeaturedPlayersIds = [featuredPlayersIds];
+    } else if (Array.isArray(featuredPlayersIds)) {
+        validFeaturedPlayersIds = featuredPlayersIds;
     }
+
+    const invalidFeaturedPlayersIds = validFeaturedPlayersIds.filter(
+        (id) => !mongoose.Types.ObjectId.isValid(id)
+    );
+
+    if (invalidFeaturedPlayersIds.length > 0) {
+        return sendResponse(res, `Invalid featured player IDs: ${invalidFeaturedPlayersIds.join(', ')}`, 400);
+    }
+
+    if (validFeaturedPlayersIds.length > 0) {
+        const featuredPlayers = await Player.find({
+            '_id': { $in: validFeaturedPlayersIds }
+        });
+
+        if (featuredPlayers.length !== validFeaturedPlayersIds.length) {
+            return sendResponse(res, "One or more players not found", 404);
+        }
+    }
+}
 
     
     const mainImageLocalPath = req.files?.mainImage?.[0]?.path;
@@ -79,7 +91,7 @@ const createProduct = asyncHandler(async (req, res) => {
         return sendResponse(res, "Error uploading images", 500);
     }
 
-    // Create the new product
+    
     const newProduct = await Product.create({
         category: categoryIds,  
         description,
@@ -88,13 +100,44 @@ const createProduct = asyncHandler(async (req, res) => {
         stock,
         mainImage: mainImageUrl,
         subImages: subImagesUrls,
-        featuredPlayers: validFeaturedPlayers,  
+        featuredPlayers: validFeaturedPlayersIds,  
     });
-
     if (!newProduct) {
         return sendResponse(res, "Error while creating Product", 501);
     }
+    
+    
+    const CategoryUpdated = await Promise.all(
+        categoryIds.map(async (categoryId) => {
+            
+            await Category.findByIdAndUpdate(
+                categoryId,
+                { $push: { relatedProducts: newProduct._id } }, // $push to add the product ID
+                { new: true } // Return the updated category
+            );
+        })
+    );
+    if (!CategoryUpdated ) {
+        sendResponse(res,"Error while pushing product in Category ")
+    }
 
+    if (featuredPlayersIds) {
+        const featuredPlayersUpdated = await Promise.all(
+            validFeaturedPlayersIds.map(async (playerId) => {
+                await FeaturedPlayer.findByIdAndUpdate(
+                    playerId,
+                    { $push: { featuredProducts: newProduct._id } },
+                    { new: true }
+                );
+            })
+        );
+    
+        if (!featuredPlayersUpdated) {
+            return sendResponse(res, "Error while pushing product in featured players", 400);
+        }
+    }
+    
+    
     
 
     return sendResponse(res, "Product Created Successfully", 201, newProduct);
@@ -201,6 +244,7 @@ const getProductByCategory = asyncHandler(async (req,res) => {
         return sendResponse(res, 'No products found in this category', 404);
       }
       const ProductData = products.map((product) => ({
+        _id : product._id ,
         name: product.name,
         description: product.description,
         price: product.price,
@@ -238,14 +282,46 @@ const getSingleProduct = asyncHandler(async (req, res) => {
     return sendResponse(res, 'Product fetched successfully', 200, response);
 });
 
+const getAllProducts = asyncHandler(async (req,res) => {
 
+    const queryObj = {...req.body}
+
+    const excludeFields = ["pages","sort","limit"]
+
+    excludeFields.forEach(el => {
+        delete queryObj[el]
+    })
+    const { page = 1, limit = 10, sort = 'price',sortOrder = 'asc'} = req.body;
+    const skip = (page - 1) * limit;
+    const sortObj = {};
+
+if (sort === 'price') {
+    
+    sortObj.price = sortOrder === 'asc' ? 1 : -1;
+  } else if (sort === 'name') {
+    
+    sortObj.name = sortOrder === 'asc' ? 1 : -1;
+  } else {
+    
+    sortObj.price = sortOrder === 'asc' ? 1 : -1;
+  }
+
+  const Products = await Product.find(queryObj).skip(skip).limit(limit).sort(sortObj).populate("featuredPlayers category") 
+
+  if (!Products || Products.length === 0) {
+     return sendResponse (res,"No Product Found ",404)
+  }
+
+  return sendResponse(res,"Product Fetched Succesfully ", 200 , Products)
+})
 
 export  {
     createProduct, 
     editProductDetails,
     deleteProductDetails,
     getProductByCategory,
-    getSingleProduct
+    getSingleProduct,
+    getAllProducts
 };
 
 

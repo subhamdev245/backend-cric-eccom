@@ -1,9 +1,9 @@
 import { Router } from "express";
 import verifyJwt from "../middleware/auth.middleware.js";
 import { isAdmin } from "../middleware/isAdmin.middleware.js";
-import { createProduct, deleteProductDetails, editProductDetails, getProductByCategory, getSingleProduct}  from "../controller/product.controller.js";
+import { createProduct, deleteProductDetails, editProductDetails, getAllProducts, getProductByCategory, getSingleProduct}  from "../controller/product.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
-import { createProductValidationMiddleware, editProductValidationMiddleware } from "../middleware/product.middleware.js";
+import { createProductValidationMiddleware, editProductValidationMiddleware, getProductsValidationMiddleware } from "../middleware/product.middleware.js";
 
 
 
@@ -49,5 +49,8 @@ router.route("/get-products/:category").get(
 )
 router.route("/get-product/:productId").get(
     getSingleProduct
+)
+router.route("get-all-Products").get(
+    getProductsValidationMiddleware,getAllProducts
 )
 export  default router

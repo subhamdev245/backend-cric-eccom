@@ -103,8 +103,49 @@ const editProductValidationMiddleware = (req, res, next) => {
   
     next();
   };
-
+const getProductsValidationMiddleware = (req, res, next) => {
+    const { page = 1, limit = 10, sort = 'price', sortOrder = 'asc', category, priceRange } = req.body;
+  
+    if (page && (isNaN(page) || page <= 0)) {
+      return sendResponse(res, 'Page must be a positive integer.', 400);
+    }
+  
+    if (limit && (isNaN(limit) || limit <= 0)) {
+      return sendResponse(res, 'Limit must be a positive integer.', 400);
+    }
+  
+    if (sort && !['price', 'name', 'rating'].includes(sort)) {
+      return sendResponse(res, 'Sort should be either "price", "name", or "rating".', 400);
+    }
+  
+    if (sortOrder && !['asc', 'desc'].includes(sortOrder)) {
+      return sendResponse(res, 'SortOrder should be either "asc" or "desc".', 400);
+    }
+  
+    if (category && !mongoose.Types.ObjectId.isValid(category)) {
+      return sendResponse(res, 'Invalid category ID.', 400);
+    }
+  
+    if (priceRange) {
+      if (typeof priceRange !== 'object' || priceRange === null) {
+        return sendResponse(res, 'Price range should be an object.', 400);
+      }
+  
+      const { min, max } = priceRange;
+  
+      if ((min && isNaN(min)) || (max && isNaN(max))) {
+        return sendResponse(res, 'Price range values must be numbers.', 400);
+      }
+  
+      if (min !== undefined && max !== undefined && min > max) {
+        return sendResponse(res, 'Min price cannot be greater than max price.', 400);
+      }
+    }
+  
+    next();
+  };
   export {
     createProductValidationMiddleware,
-    editProductValidationMiddleware
+    editProductValidationMiddleware,
+    getProductsValidationMiddleware,
   }

@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { FeaturedPlayer } from "./featureplayer.models.js";
+import { Review } from "./productreview.model.js";
 
 
 const productSchema = new Schema ({
@@ -43,7 +44,13 @@ const productSchema = new Schema ({
           ref : "FeaturedPlayer",
           required : false
         }
-      ]
+      ],
+      reviews : [{
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "Review",
+        required : true ,
+      }]
+
 },{timestamps:true})
 
 
