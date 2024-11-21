@@ -50,7 +50,7 @@ router.route("/get-products/:category").get(
 router.route("/get-product/:productId").get(
     getSingleProduct
 )
-router.route("get-all-Products").get(
+router.route("/get-Products").post(
     getProductsValidationMiddleware,getAllProducts
 )
 export  default router

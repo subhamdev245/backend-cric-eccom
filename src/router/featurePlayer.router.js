@@ -7,3 +7,4 @@ import { upload } from "../middleware/multer.middleware.js";
 const router = express.Router();
 
 router.route("/:playerId").get(getFeaturedPlayer)
+

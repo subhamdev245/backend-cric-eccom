@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
-import { Product } from "./products.models";
-import { EcomProfile } from "./profile.models";
-import { ReviewStarEnum } from "../../utils/constant";
+import { Product } from "./products.models.js";
+import { EcomProfile } from "./profile.models.js";
+import { ReviewStarEnum } from "../../src/utils/constant.js";
 
 const productReview = new Schema({
     reviewFor : {

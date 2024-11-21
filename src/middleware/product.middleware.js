@@ -1,6 +1,5 @@
 import sendResponse from "../utils/sendResponse.js";
-
-
+import mongoose from "mongoose";
 
 const createProductValidationMiddleware = (req, res, next) => {
     const { name, description, price, stock } = req.body;
