@@ -39,7 +39,12 @@ const cartSchema = new Schema(
             type: Number,
             
             required: true
+        },
+        priceAfterDiscount : {
+            type : Number,
+            required : false
         }
+        
 
     },
 
