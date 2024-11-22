@@ -5,10 +5,14 @@ import asyncHandler from "../utils/asyncHandler.js"
 import jwt from "jsonwebtoken";
 
 const verifyJwt = asyncHandler(async(req,res,next) => {
+    console.log("hello");
+    
     // STEPS:   
     // 1 Extract accessToken and  from req.cookies 
             // ! accessToken return
     const accessToken = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ","")
+    console.log(accessToken);
+    
     if(!accessToken){
        return  sendResponse(res,"Unauthorized Access",401)
     }
@@ -22,6 +26,8 @@ const verifyJwt = asyncHandler(async(req,res,next) => {
            return sendResponse(res,"Invalid Access TOken",401)
         }
         req.user = user
+        
+        
         next()        
     } catch (error) {
         if (error === "TokenExpiredError") {

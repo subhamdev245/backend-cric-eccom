@@ -31,7 +31,6 @@ const cartSchema = new Schema(
         },
         totalQty: {
             type: Number,
-            min: [1, "Quantity can not be less then 1. "],
             default: 1,
             required: true
         },

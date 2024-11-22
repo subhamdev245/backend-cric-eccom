@@ -269,6 +269,7 @@ const getSingleProduct = asyncHandler(async (req, res) => {
         return sendResponse(res, 'Product not found', 404);
     }
     const response = {
+        id : product._id,
         name: product.name,
         description: product.description,
         price: product.price,
@@ -284,7 +285,7 @@ const getSingleProduct = asyncHandler(async (req, res) => {
 
 const getAllProducts = asyncHandler(async (req, res) => {
 
-    const queryObj = { ...req.body }
+    const queryObj = { ...req.body } 
     
     
     const excludeFields = ["page", "sort", "limit" , "sortOrder"]
@@ -292,6 +293,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
     excludeFields.forEach(el => {
         delete queryObj[el]
     })
+    
     const { page = 1, limit = 10, sort = 'price', sortOrder = 'asc' } = req.body;
     const skip = (page - 1) * limit;
     const sortObj = {};
@@ -307,8 +309,14 @@ const getAllProducts = asyncHandler(async (req, res) => {
 
         sortObj.price = sortOrder === 'asc' ? 1 : -1;
     }
+
+   
     
-    const Products = await Product.find(queryObj).skip(skip).limit(limit).sort(sortObj).populate("featuredPlayers category")
+    const Products = await Product.find(queryObj ? queryObj : {}).skip(skip).limit(limit).sort(sortObj).populate("featuredPlayers category")
+
+    console.log(Products);
+    
+    
     const totalProducts = await Product.countDocuments(queryObj);
     if (!Products || Products.length === 0) {
         return sendResponse(res, "No Product Found ", 404)
