@@ -310,9 +310,15 @@ const getAllProducts = asyncHandler(async (req, res) => {
         sortObj.price = sortOrder === 'asc' ? 1 : -1;
     }
 
+   console.log(queryObj);
    
+   if (queryObj.category === null) {
+    delete queryObj.category; 
+}
+
+   const Products = await Product.find(Object.keys(queryObj).length > 0 ? queryObj : {}).skip(skip).limit(limit).sort(sortObj).populate("featuredPlayers category");
+    console.log(queryObj);
     
-    const Products = await Product.find(queryObj ? queryObj : {}).skip(skip).limit(limit).sort(sortObj).populate("featuredPlayers category")
 
     console.log(Products);
     
